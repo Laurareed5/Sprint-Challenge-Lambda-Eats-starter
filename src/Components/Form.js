@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import * as yup from "yup";
+import UsersList from "./UsersList";
 
 const formSchema = yup.object().shape({
   name: yup.string().required("Name is a required field"),
@@ -30,8 +31,9 @@ export default function Form() {
     instructions: "",
   });
 
-  const [post, setPost] = useState();
-
+  const [post, setPost] = useState([]);
+  const [users, setUsers] = useState([]);
+  const submit = (newOrder) => setUsers(...formState, newOrder);
   useEffect(() => {
     formSchema.isValid(formState).then((valid) => {
       setButtonDisabled(!valid);
@@ -40,19 +42,23 @@ export default function Form() {
 
   const formSubmit = (event) => {
     event.preventDefault();
+    console.log("formSubmit", formSubmit);
     axios
       .post("https://reqes.in/api/users", formState)
       .then((response) => {
         setPost(response.data);
-
-        setFormState({
-          name: "",
-          size: "",
-          toppings: "",
-          instructions: "",
-        });
+        console.log(response.data, "response.data");
+        // setUsers([...formState, response.data]);
+        submit(response.data);
+        // setFormState({
+        //   name: "",
+        //   size: "",
+        //   toppings: "",
+        //   instructions: "",
+        // });
       })
       .catch((err) => console.log(err.response));
+    console.log(users);
   };
 
   const validateChange = (event) => {
@@ -73,17 +79,27 @@ export default function Form() {
       });
   };
 
+  //   const inputChange = (event) => {
+  //     event.persist();
+  //     const newFormData = {
+  //       ...formState,
+  //       [event.target.name]:
+  //         event.target.type === "checkbox"
+  //           ? event.target.checked
+  //           : event.target.value,
+  //     };
+  //     validateChange(event);
+  //     setFormState(newFormData);
+  //   };
+
   const inputChange = (event) => {
     event.persist();
-    const newFormData = {
-      ...formState,
-      [event.target.name]:
-        event.target.type === "checkbox"
-          ? event.target.checked
-          : event.target.value,
-    };
     validateChange(event);
-    setFormState(newFormData);
+    let value =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+    setFormState({ ...formState, [event.target.name]: value });
   };
 
   return (
@@ -171,8 +187,10 @@ export default function Form() {
           onChange={inputChange}
         />
       </label>
-      <pre>{JSON.stringify(post, null, 2)}</pre>
-      <button>Add to Order</button>
+      <br />
+      <button type="submit">Add to Order</button>
+      {post.length > 0 ? <pre>{JSON.stringify(post, null, 2)}</pre> : null}
+      <UsersList users={users} />
     </form>
   );
 }

@@ -6,3 +6,33 @@
   font-size: .8rem;
   color    : red;
 }
+
+button {
+  width           : 150px;
+  display         : inline-block;
+  padding         : 2px 1px;
+  font-size       : .5rem;
+  text-transform  : uppercase;
+  border          : 0;
+  border-radius   : 5px;
+  letter-spacing  : 2px;
+  outline         : none;
+  background-color: rgb(238, 24, 24);
+  color           : #fff;
+  cursor          : pointer;
+  box-shadow      : 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-image: none;
+  background-color: #076d07;
+  box-shadow      : 0 5px 12px rgba(0, 0, 0, 0.3);
+}
+
+button:disabled {
+  background-image: none;
+  background-color: white;
+  border          : 1px solid rgba(0, 0, 0, 0.1);
+  color           : rgba(0, 0, 0, 0.1);
+  cursor          : not-allowed;
+}
