@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import * as yup from "yup";
+import axios from "axios";
 import UsersList from "./UsersList";
 
 const formSchema = yup.object().shape({
@@ -15,7 +15,8 @@ const formSchema = yup.object().shape({
 });
 
 export default function Form() {
-  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [post, setPost] = useState([]);
 
   const [formState, setFormState] = useState({
     name: "",
@@ -24,82 +25,57 @@ export default function Form() {
     instructions: "",
   });
 
-  const [errors, setErrors] = useState({
+  const [errorState, setErrorState] = useState({
     name: "",
     size: "",
     toppings: "",
     instructions: "",
   });
 
-  const [post, setPost] = useState([]);
-  const [users, setUsers] = useState([]);
-  const submit = (newOrder) => setUsers(...formState, newOrder);
   useEffect(() => {
-    formSchema.isValid(formState).then((valid) => {
-      setButtonDisabled(!valid);
-    });
+    formSchema.isValid(formState).then((valid) => {});
   }, [formState]);
 
-  const formSubmit = (event) => {
-    event.preventDefault();
-    console.log("formSubmit", formSubmit);
-    axios
-      .post("https://reqes.in/api/users", formState)
-      .then((response) => {
-        setPost(response.data);
-        console.log(response.data, "response.data");
-        // setUsers([...formState, response.data]);
-        submit(response.data);
-        // setFormState({
-        //   name: "",
-        //   size: "",
-        //   toppings: "",
-        //   instructions: "",
-        // });
-      })
-      .catch((err) => console.log(err.response));
-    console.log(users);
-  };
-
-  const validateChange = (event) => {
+  const validate = (event) => {
     yup
       .reach(formSchema, event.target.name)
       .validate(event.target.value)
       .then((valid) => {
-        setErrors({
-          ...errors,
+        setErrorState({
+          ...errorState,
           [event.target.name]: "",
         });
       })
       .catch((err) => {
-        setErrors({
-          ...errors,
+        setErrorState({
+          ...errorState,
           [event.target.name]: err.errors[0],
         });
       });
   };
 
-  //   const inputChange = (event) => {
-  //     event.persist();
-  //     const newFormData = {
-  //       ...formState,
-  //       [event.target.name]:
-  //         event.target.type === "checkbox"
-  //           ? event.target.checked
-  //           : event.target.value,
-  //     };
-  //     validateChange(event);
-  //     setFormState(newFormData);
-  //   };
-
   const inputChange = (event) => {
     event.persist();
-    validateChange(event);
+    validate(event);
     let value =
       event.target.type === "checkbox"
         ? event.target.checked
         : event.target.value;
-    setFormState({ ...formState, [event.target.name]: value });
+    setFormState({
+      ...formState,
+      [event.target.name]: value,
+    });
+  };
+
+  const formSubmit = (event) => {
+    event.preventDefault();
+    axios
+      .post("https://reqres.in/api/users", formState)
+      .then((response) => {
+        setPost([]);
+        setUsers([...users, response.data]);
+      })
+      .catch((err) => console.log(err.response));
   };
 
   return (
@@ -113,7 +89,9 @@ export default function Form() {
           value={formState.name}
           onChange={inputChange}
         />
-        {errors.name.length > 0 ? <p className="error">{errors.name}</p> : null}
+        {errorState.name.length > 0 ? (
+          <p className="error">{errorState.name}</p>
+        ) : null}
       </label>
       <br />
 
@@ -142,8 +120,8 @@ export default function Form() {
           value={formState.instructions}
           onChange={inputChange}
         />
-        {errors.instructions.length > 0 ? (
-          <p className="error">{errors.instructions}</p>
+        {errorState.instructions.length > 0 ? (
+          <p className="error">{errorState.instructions}</p>
         ) : null}
       </label>
       <br />
@@ -179,7 +157,7 @@ export default function Form() {
       </label>
       <br />
       <label htmlFor="anchovi">
-        anchovis
+        anchovies
         <input
           type="checkbox"
           name="anchovi"

@@ -36,3 +36,28 @@ button:disabled {
   color           : rgba(0, 0, 0, 0.1);
   cursor          : not-allowed;
 }
+
+body {
+  background-color: white;
+  background-image: linear-gradient(to right, rgb(247, 239, 246));
+}
+
+input,
+textarea {
+
+
+
+
+  border          : 2px solid rgba(0, 0, 0, 0.2);
+  border-radius   : 5px;
+  padding         : 10px;
+  transition      : all 0.3s;
+  font-size       : 1.4rem;
+  letter-spacing  : 0.5px;
+  background-color: white;
+}
+
+input:focus {
+  outline     : none;
+  border-color: #f78585;
+}
